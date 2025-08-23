@@ -32,6 +32,6 @@ app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 
-app.use('/home', (req, res) => {
+app.use('/', (req, res) => {
   res.send("Welcome to the Vendor Management System API");
 });
