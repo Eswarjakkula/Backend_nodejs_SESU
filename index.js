@@ -9,7 +9,7 @@ const productRoutes = require('./routes/productRoutes')
 const path = require('path');
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 dotEnv.config();
 
 mongoose.connect(process.env.MONGO_URI)
@@ -30,4 +30,8 @@ app.use('/uploads', express.static('uploads'));
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
+});
+
+app.use('/', (req, res) => {
+  res.send("Welcome to the Vendor Management System API");
 });
