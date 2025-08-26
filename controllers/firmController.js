@@ -1,7 +1,7 @@
 const Firm= require('../models/Firm');
 const Vendor= require('../models/Vendor');
 const multer = require('multer');
-const Path = require('path');
+const path = require('path');
 
 
 const storage = multer.diskStorage({
@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
       cb(null, "uploads/"); // Folder where images will be stored
     },
     filename: function(req, file, cb) {
-      cb(null, Date.now() +Path.extname(file.originalname)); // unique file name
+      cb(null, Date.now() +path.extname(file.originalname)); // unique file name
     },
   });
 const upload = multer({ storage: storage });
