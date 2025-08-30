@@ -13,7 +13,6 @@ const storage = multer.diskStorage({
   });
 const upload = multer({ storage: storage });
 
-
 const addProduct = async(req, res) => {
     try{
         const { productName, price,category,bestSeller, description } = req.body;
@@ -36,8 +35,9 @@ const addProduct = async(req, res) => {
             firm: firm._id 
         });
         const savedProduct = await Product.save();
+        
         firm.products.push(savedProduct);
-       
+    
 
 
         
@@ -69,18 +69,27 @@ const addProduct = async(req, res) => {
         }
     };
 
-    const deleteProductById= async (req, res) => {
+    const deleteProductById = async (req, res) => {
         try {
-            const productId = req.params.productId;
-            const deletedProduct = await product.findByIdAndDelete(productId);
-            if (!deletedProduct) {
-                return res.status(404).json({ message: "Product not found" });
-            }
-          
+          const { firmId, productId } = req.params;
+      
+          // Delete product from collection
+          const deletedProduct = await product.findByIdAndDelete(productId);
+          if (!deletedProduct) {
+            return res.status(404).json({ message: "Product not found" });
+          }
+      
+          // Remove product reference from Firm
+          await Firm.findByIdAndUpdate(firmId, { $pull: { products: productId } });
+      
+          return res.status(200).json({ message: "Product deleted successfully" });
         } catch (error) {
-            console.error("Error in deleteProductById:", error.message);
-            return res.status(500).json({ message: "Server error, please try again later" });
+          console.error("Error in deleteProductById:", error.message);
+          return res
+            .status(500)
+            .json({ message: "Server error, please try again later" });
         }
-    };
+      };
+      
 
 module.exports = { addProduct: [upload.single('image'), addProduct],getProductByFirm ,deleteProductById };

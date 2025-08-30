@@ -21,9 +21,13 @@ const addFirm = async(req, res) => {
     const image= req.file ? req.file.filename : undefined; 
 
     const vendor=await Vendor.findById(req.vendorId);
+
     
     if (!vendor) {
       res.status(404).json({ message: "Vendor not found" });
+    }
+    if(vendor.firms.length >0){
+      return res.status(400).json({ message: "Vendor already has a firm" });
     }
     const firm= new Firm({
         firmName,
@@ -35,12 +39,16 @@ const addFirm = async(req, res) => {
         vendor: vendor._id // Assuming vendor._id is available in the request
     });
    
-    const savedFirm= await firm.save()
+    const savedFirm= await firm.save(); 
+
+    const firmId = savedFirm._id;
+
 
     vendor.firms.push(savedFirm);
     await vendor.save();
+   
 
-    return res.status(201).json({ message: "Firm added successfully", firm });
+    return res.status(201).json({ message: "Firm added successfully", firmId });
   }catch (error) {
     console.error("Error in addFirm:", error.message);
     return res.status(500).json({ message: "Server error, please try again later" });

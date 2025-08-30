@@ -46,7 +46,9 @@ const vendorLogin = async (req, res) => {
 
         // Generate JWT token
         const token = jwt.sign({ vendorId: vendor._id }, secretKey, { expiresIn: '1h' });
-        res.status(200).json({message: "Login successful",token})
+
+        const vendorId= vendor._id;
+        res.status(200).json({message: "Login successful",token,vendorId})
         
         console.log(email,"this is token", token);
         
@@ -70,16 +72,18 @@ const getAllVendors = async (req, res) => {
 }
 const getVendorbyId=async (req, res) => {
 
-    const { vendorId } = req.params.id;
+    const { vendorId } = req.params;
     try {
         const vendor = await Vendor.findById(vendorId).populate('firms');
         if (!vendor) {
             return res.status(404).json({ error: "Vendor not found" });
-        }                                       
-        res.json({ vendor });
+        } 
+        const vendorFirmId= vendor.firms[0]._id;
+         res.status(200).json({ vendorId,vendorFirmId, vendor});
+         console.log(vendorFirmId);
     } catch (error) {
         console.error("Error in getVendorbyId:", error.message);
         res.status(500).json("Server error, please try again later");
     }
 }
-module.exports = { vendorRegister, vendorLogin, getAllVendors };
+module.exports = { vendorRegister, vendorLogin, getAllVendors, getVendorbyId };
